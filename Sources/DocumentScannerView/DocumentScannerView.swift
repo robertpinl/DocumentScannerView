@@ -26,12 +26,7 @@ public struct DocumentScannerView: UIViewControllerRepresentable {
     /// - Parameter onCompletion: A callback that will be invoked when the scanning operation has succeeded or failed.
     public init(onCompletion: @escaping (Result<PDFDocument, Error>) -> Void) {
         self.onCompletion = { result in
-            switch result {
-            case .success(let images):
-                onCompletion(.success(PDFDocument(images)))
-            case .failure(let error):
-                onCompletion(.failure(error))
-            }
+            onCompletion(result.map { PDFDocument($0) })
         }
     }
     
