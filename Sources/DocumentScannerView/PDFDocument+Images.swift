@@ -16,11 +16,9 @@ extension PDFDocument {
     /// - Parameter images: The images to lay out, in order, one per page.
     public convenience init(_ images: [UIImage]) {
         self.init()
-        var pageIndex = 0
         for image in images {
             guard let page = PDFPage(image: image) else { continue }
-            insert(page, at: pageIndex)
-            pageIndex += 1
+            insert(page, at: pageCount)
         }
     }
 }
