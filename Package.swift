@@ -11,23 +11,19 @@ let package = Package(
         .visionOS(.v1)
     ],
     products: [
-        // Products define the executables and libraries a package produces, making them visible to other packages.
         .library(
             name: "DocumentScannerView",
-            targets: ["DocumentScannerView"]),
+            targets: ["DocumentScannerView"]
+        ),
     ],
     targets: [
-        // Targets are the basic building blocks of a package, defining a module or a test suite.
-        // Targets can depend on other targets in this package and products from dependencies.
         .target(
             name: "DocumentScannerView",
-            resources: [.copy("PrivacyInfo.xcprivacy")],
-            swiftSettings: [.swiftLanguageMode(.v6)]
+            resources: [.copy("PrivacyInfo.xcprivacy")]
         ),
         .testTarget(
             name: "DocumentScannerViewTests",
-            dependencies: ["DocumentScannerView"],
-            swiftSettings: [.swiftLanguageMode(.v6)]
+            dependencies: ["DocumentScannerView"]
         ),
     ]
 )
