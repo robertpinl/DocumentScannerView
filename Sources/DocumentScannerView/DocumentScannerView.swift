@@ -18,17 +18,19 @@ public struct DocumentScannerView: UIViewControllerRepresentable {
     @Environment(\.dismiss)
     private var dismiss
     
-    private let onCompletion: (Result<[UIImage], any Error>) -> Void
+    private let onCompletion: @MainActor (Result<[UIImage], any Error>) -> Void
     
-    /// Creates a scanner that scans documents into a page image per scanned page.
-    /// - Parameter onCompletion: A callback that will be invoked when the scanning operation has succeeded or failed.
-    public init(onCompletion: @escaping (Result<[UIImage], any Error>) -> Void) {
+    /// Creates a scanner that scans documents into an image per scanned page.
+    /// - Parameter onCompletion: A callback that will be invoked on the main actor when the
+    ///   scanning operation has succeeded or failed.
+    public init(onCompletion: @escaping @MainActor (Result<[UIImage], any Error>) -> Void) {
         self.onCompletion = onCompletion
     }
     
     /// Creates a scanner that scans documents into a single `PDFDocument`.
-    /// - Parameter onPDFCompletion: A callback that will be invoked when the scanning operation has succeeded or failed.
-    public init(onPDFCompletion: @escaping (Result<PDFDocument, any Error>) -> Void) {
+    /// - Parameter onPDFCompletion: A callback that will be invoked on the main actor when the
+    ///   scanning operation has succeeded or failed.
+    public init(onPDFCompletion: @escaping @MainActor (Result<PDFDocument, any Error>) -> Void) {
         self.onCompletion = { result in
             onPDFCompletion(result.map { PDFDocument($0) })
         }
@@ -56,7 +58,7 @@ public struct DocumentScannerView: UIViewControllerRepresentable {
     
     /// A Boolean variable that indicates whether or not the current device supports document scanning.
     ///
-    /// This class method returns `false` for unsupported hardware.
+    /// This is `false` on hardware that doesn't support document scanning.
     @MainActor
     public static var isSupported: Bool {
         VNDocumentCameraViewController.isSupported
@@ -64,34 +66,31 @@ public struct DocumentScannerView: UIViewControllerRepresentable {
 }
 
 extension DocumentScannerView {
+    /// The delegate that forwards VisionKit's callbacks to the scanner's completion handler.
+    ///
+    /// VisionKit declares `VNDocumentCameraViewControllerDelegate` without main-actor isolation,
+    /// but it only ever calls these methods from the main thread, on the view controller it owns.
+    /// `@preconcurrency` states that invariant once — the compiler checks it at runtime — instead
+    /// of repeating `nonisolated` and `MainActor.assumeIsolated` in every method. It can be dropped
+    /// once VisionKit annotates the protocol as `@MainActor`.
     @MainActor
-    public final class Coordinator: NSObject, VNDocumentCameraViewControllerDelegate {
+    public final class Coordinator: NSObject, @preconcurrency VNDocumentCameraViewControllerDelegate {
         fileprivate var parent: DocumentScannerView
         
         fileprivate init(_ parent: DocumentScannerView) {
             self.parent = parent
         }
         
-        // VisionKit's delegate protocol isn't annotated as main-actor bound, but UIKit only ever
-        // calls it on the main thread, so these hop back to the actor the coordinator lives on.
-        
-        nonisolated public func documentCameraViewController(_ controller: VNDocumentCameraViewController, didFinishWith scan: VNDocumentCameraScan) {
-            let pages = (0..<scan.pageCount).map(scan.imageOfPage(at:))
-            MainActor.assumeIsolated {
-                parent.finish(with: .success(pages))
-            }
+        public func documentCameraViewController(_ controller: VNDocumentCameraViewController, didFinishWith scan: VNDocumentCameraScan) {
+            parent.finish(with: .success((0..<scan.pageCount).map(scan.imageOfPage(at:))))
         }
         
-        nonisolated public func documentCameraViewControllerDidCancel(_ controller: VNDocumentCameraViewController) {
-            MainActor.assumeIsolated {
-                parent.dismiss()
-            }
+        public func documentCameraViewControllerDidCancel(_ controller: VNDocumentCameraViewController) {
+            parent.dismiss()
         }
         
-        nonisolated public func documentCameraViewController(_ controller: VNDocumentCameraViewController, didFailWithError error: any Error) {
-            MainActor.assumeIsolated {
-                parent.finish(with: .failure(error))
-            }
+        public func documentCameraViewController(_ controller: VNDocumentCameraViewController, didFailWithError error: any Error) {
+            parent.finish(with: .failure(error))
         }
     }
 }

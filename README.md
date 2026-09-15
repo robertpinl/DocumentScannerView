@@ -98,6 +98,12 @@ Both spellings have an `onPDFCompletion:` variant that collects every scanned pa
 > `onCompletion:`, a trailing closure without an explicit parameter type was an *ambiguous use of
 > `init(onCompletion:)`* compiler error.
 
+### Completion handlers and the main actor
+
+Both completion handlers are `@MainActor`, because that's where VisionKit delivers its callbacks.
+You can update view state directly inside them, and pass a `@MainActor` method as the handler
+without wrapping it in a closure.
+
 ### Checking hardware support
 
 `VNDocumentCameraViewController` isn't available on every device. Check before offering the scanner:

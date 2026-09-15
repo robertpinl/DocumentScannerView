@@ -12,10 +12,11 @@ extension View {
     /// Presents a document scanner that returns an image per scanned page.
     /// - Parameters:
     ///   - isPresented: A binding that determines whether the scanner is presented.
-    ///   - onCompletion: A callback that will be invoked when the scanning operation has succeeded or failed.
+    ///   - onCompletion: A callback that will be invoked on the main actor when the scanning
+    ///     operation has succeeded or failed.
     public func documentScanner(
         isPresented: Binding<Bool>,
-        onCompletion: @escaping (Result<[UIImage], any Error>) -> Void
+        onCompletion: @escaping @MainActor (Result<[UIImage], any Error>) -> Void
     ) -> some View {
         fullScreenCover(isPresented: isPresented) {
             DocumentScannerView(onCompletion: onCompletion)
@@ -25,10 +26,11 @@ extension View {
     /// Presents a document scanner that returns all scanned pages as a single `PDFDocument`.
     /// - Parameters:
     ///   - isPresented: A binding that determines whether the scanner is presented.
-    ///   - onPDFCompletion: A callback that will be invoked when the scanning operation has succeeded or failed.
+    ///   - onPDFCompletion: A callback that will be invoked on the main actor when the scanning
+    ///     operation has succeeded or failed.
     public func documentScanner(
         isPresented: Binding<Bool>,
-        onPDFCompletion: @escaping (Result<PDFDocument, any Error>) -> Void
+        onPDFCompletion: @escaping @MainActor (Result<PDFDocument, any Error>) -> Void
     ) -> some View {
         fullScreenCover(isPresented: isPresented) {
             DocumentScannerView(onPDFCompletion: onPDFCompletion)
