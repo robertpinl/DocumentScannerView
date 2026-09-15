@@ -9,35 +9,29 @@ import SwiftUI
 import PDFKit
 
 extension View {
-    @ViewBuilder
+    /// Presents a document scanner that returns an image per scanned page.
+    /// - Parameters:
+    ///   - isPresented: A binding that determines whether the scanner is presented.
+    ///   - onCompletion: A callback that will be invoked when the scanning operation has succeeded or failed.
     public func documentScanner(
         isPresented: Binding<Bool>,
-        onCompletion: @escaping (Result<[UIImage], Error>) -> Void
+        onCompletion: @escaping (Result<[UIImage], any Error>) -> Void
     ) -> some View {
-        if #available(iOS 14, macCatalyst 14, visionOS 1, *) {
-            self.fullScreenCover(isPresented: isPresented) {
-                DocumentScannerView(onCompletion: onCompletion)
-            }
-        } else {
-            self.fullScreenCoverCompat(isPresented: isPresented) {
-                DocumentScannerView(onCompletion: onCompletion)
-            }
+        fullScreenCover(isPresented: isPresented) {
+            DocumentScannerView(onCompletion: onCompletion)
         }
     }
     
-    @ViewBuilder
+    /// Presents a document scanner that returns all scanned pages as a single `PDFDocument`.
+    /// - Parameters:
+    ///   - isPresented: A binding that determines whether the scanner is presented.
+    ///   - onPDFCompletion: A callback that will be invoked when the scanning operation has succeeded or failed.
     public func documentScanner(
         isPresented: Binding<Bool>,
-        onCompletion: @escaping (Result<PDFDocument, Error>) -> Void
+        onPDFCompletion: @escaping (Result<PDFDocument, any Error>) -> Void
     ) -> some View {
-        if #available(iOS 14, macCatalyst 14, visionOS 1, *) {
-            self.fullScreenCover(isPresented: isPresented) {
-                DocumentScannerView(onCompletion: onCompletion)
-            }
-        } else {
-            self.fullScreenCoverCompat(isPresented: isPresented) {
-                DocumentScannerView(onCompletion: onCompletion)
-            }
+        fullScreenCover(isPresented: isPresented) {
+            DocumentScannerView(onPDFCompletion: onPDFCompletion)
         }
     }
 }
