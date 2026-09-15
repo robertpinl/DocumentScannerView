@@ -1,9 +1,8 @@
 # DocumentScannerView
 
-[![](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Fedonv%2FDocumentScannerView%2Fbadge%3Ftype%3Dswift-versions)](https://swiftpackageindex.com/edonv/DocumentScannerView)
-[![](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Fedonv%2FDocumentScannerView%2Fbadge%3Ftype%3Dplatforms)](https://swiftpackageindex.com/edonv/DocumentScannerView)
-
 `DocumentScannerView` is a SwiftUI wrapper of [`VNDocumentCameraViewController`](https://developer.apple.com/documentation/visionkit/vndocumentcameraviewcontroller). Use it for scanning documents using the native document scanner.
+
+A fork of [edonv/DocumentScannerView](https://github.com/edonv/DocumentScannerView), updated for iOS 17 and Swift 6.
 
 ## Requirements
 
@@ -18,7 +17,7 @@ Add the package in Xcode via **File ▸ Add Package Dependencies…**, or in `Pa
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/edonv/DocumentScannerView.git", from: "1.0.0")
+    .package(url: "https://github.com/robertpinl/DocumentScannerView.git", from: "1.0.0")
 ]
 ```
 
